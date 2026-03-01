@@ -313,6 +313,16 @@ const en = {
     status: "Status",
   },
 
+  charts: {
+    monthlyOverview: "Monthly Income vs Expenses",
+    donationsBySource: "Donations by Payment Method",
+    expenseCategories: "Where the Money Goes",
+    fundingTrend: "Funding Trend Over Time",
+    income: "Income",
+    expenses: "Expenses",
+    total: "Total",
+  },
+
   admin: {
     title: "Admin Dashboard",
     dashboard: "Dashboard",

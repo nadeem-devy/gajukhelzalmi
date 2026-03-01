@@ -315,6 +315,16 @@ const ur: Dictionary = {
     status: "حالت",
   },
 
+  charts: {
+    monthlyOverview: "ماہانہ آمدنی بمقابلہ اخراجات",
+    donationsBySource: "ذریعۂ ادائیگی کے مطابق چندے",
+    expenseCategories: "رقم کہاں خرچ ہوئی",
+    fundingTrend: "مالی رجحان",
+    income: "آمدنی",
+    expenses: "اخراجات",
+    total: "کل",
+  },
+
   admin: {
     title: "انتظامی صفحہ",
     dashboard: "مرکزی صفحہ",

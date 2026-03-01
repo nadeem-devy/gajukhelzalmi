@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useStore } from "@/lib/store";
 import { useLang } from "@/lib/i18n/context";
@@ -8,6 +8,10 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import Badge from "@/components/ui/badge";
 import StatCard from "@/components/ui/stat-card";
 import Modal from "@/components/ui/modal";
+import DonutChart from "@/components/charts/donut-chart";
+import BarChart from "@/components/charts/bar-chart";
+import HorizontalBars from "@/components/charts/horizontal-bars";
+import { getMonthlyComparison, getDonationsBySource, getExpensesByCategory } from "@/components/charts/chart-utils";
 import {
   FundingIcon,
   CalendarIcon,
@@ -139,6 +143,29 @@ export default function FundingPage() {
       {/* Overview Tab */}
       {tab === "overview" && (
         <div className="space-y-4">
+          {/* Charts */}
+          <DonutChart
+            data={getDonationsBySource(donations).map((d) => ({
+              label: t(`funding.${d.source}`),
+              value: d.amount,
+              color: d.color,
+            }))}
+            title={t("charts.donationsBySource")}
+            centerLabel={t("charts.total")}
+          />
+          <BarChart
+            data={getMonthlyComparison(donations, expenses, 6)}
+            title={t("charts.monthlyOverview")}
+            incomeLabel={t("charts.income")}
+            expenseLabel={t("charts.expenses")}
+          />
+          <HorizontalBars
+            data={getExpensesByCategory(expenses).map((c) => ({
+              label: t(`expenseCategory.${c.category}`) !== `expenseCategory.${c.category}` ? t(`expenseCategory.${c.category}`) : c.category,
+              value: c.amount,
+            }))}
+            title={t("charts.expenseCategories")}
+          />
           {/* Running Balance View */}
           <div className="card p-5">
             <h3 className="text-sm font-bold text-warmgray-900 mb-4">{t("funding.runningBalance")}</h3>

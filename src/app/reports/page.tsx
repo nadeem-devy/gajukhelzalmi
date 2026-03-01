@@ -3,6 +3,9 @@
 import { useStore } from "@/lib/store";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useLang } from "@/lib/i18n/context";
+import TrendChart from "@/components/charts/trend-chart";
+import HorizontalBars from "@/components/charts/horizontal-bars";
+import { getCumulativeTrend, getExpensesByCategory } from "@/components/charts/chart-utils";
 import {
   ReportIcon,
   PrinterIcon,
@@ -85,6 +88,23 @@ export default function ReportsPage() {
               <p className="text-xs text-blue-600 font-medium">{t("reports.balance")}</p>
               <p className="text-xl font-bold text-blue-700">{formatCurrency(funding.balance)}</p>
             </div>
+          </div>
+
+          {/* Charts */}
+          <div className="space-y-4 mb-6">
+            <TrendChart
+              data={getCumulativeTrend(donations, expenses)}
+              title={t("charts.fundingTrend")}
+              incomeLabel={t("charts.income")}
+              expenseLabel={t("charts.expenses")}
+            />
+            <HorizontalBars
+              data={getExpensesByCategory(expenses).map((c) => ({
+                label: t(`expenseCategory.${c.category}`) !== `expenseCategory.${c.category}` ? t(`expenseCategory.${c.category}`) : c.category,
+                value: c.amount,
+              }))}
+              title={t("charts.expenseCategories")}
+            />
           </div>
 
           {/* Donations Table */}
