@@ -34,6 +34,7 @@ export default function CampaignsPage() {
   const [donated, setDonated] = useState(false);
 
   const filtered = filter === "all" ? campaigns : campaigns.filter((c) => c.status === filter);
+  const activeCampaign = campaigns.find((c) => c.status === "active");
 
   const handleDonate = () => {
     if (!donateAmount || !donateCampaign || !donateName || !donateReceiver) return;
@@ -61,8 +62,21 @@ export default function CampaignsPage() {
   return (
     <div className="container-page">
       <div className="page-header">
-        <h1 className="section-title">{t("campaigns.title")}</h1>
-        <p className="section-subtitle">{t("campaigns.subtitle")}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="section-title">{t("campaigns.title")}</h1>
+            <p className="section-subtitle">{t("campaigns.subtitle")}</p>
+          </div>
+          {activeCampaign && (
+            <button
+              onClick={() => { setDonateCampaign(activeCampaign); setDonated(false); }}
+              className="btn-primary justify-center sm:w-auto"
+            >
+              <FundingIcon className="w-4 h-4" />
+              {t("campaigns.contribute")}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
