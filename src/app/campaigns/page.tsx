@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { useStore } from "@/lib/store";
 import { useLang } from "@/lib/i18n/context";
@@ -20,7 +19,7 @@ import {
 import type { Campaign, DonationSource } from "@/lib/types";
 
 export default function CampaignsPage() {
-  const { user, canContribute, isLoggedIn } = useAuth();
+  const { user } = useAuth();
   const { campaigns, recordDonation } = useStore();
   const { t, td } = useLang();
   const [filter, setFilter] = useState<"all" | "active" | "completed" | "upcoming">("all");
@@ -37,14 +36,14 @@ export default function CampaignsPage() {
   const filtered = filter === "all" ? campaigns : campaigns.filter((c) => c.status === filter);
 
   const handleDonate = () => {
-    if (!donateAmount || !donateCampaign || !user) return;
+    if (!donateAmount || !donateCampaign) return;
     recordDonation({
       amount: Number(donateAmount),
       source: donateSource,
-      donorName: donateAnonymous ? undefined : (donateName || user.name),
+      donorName: donateAnonymous ? undefined : (donateName || user?.name),
       anonymous: donateAnonymous,
       campaignId: donateCampaign.id,
-      recordedBy: user.id,
+      recordedBy: user?.id || "public",
     });
     setDonated(true);
   };
@@ -154,7 +153,7 @@ export default function CampaignsPage() {
                     {t("campaigns.viewDetails")}
                     <ChevronRightIcon />
                   </button>
-                  {canContribute && campaign.status === "active" && (
+                  {campaign.status === "active" && (
                     <button
                       onClick={() => { setDonateCampaign(campaign); setDonated(false); }}
                       className="flex-1 btn-primary justify-center"
@@ -162,11 +161,6 @@ export default function CampaignsPage() {
                       <FundingIcon className="w-4 h-4" />
                       {t("campaigns.contribute")}
                     </button>
-                  )}
-                  {!isLoggedIn && campaign.status === "active" && (
-                    <Link href="/login" className="flex-1 btn-secondary justify-center text-center">
-                      {t("campaigns.logInToContribute")}
-                    </Link>
                   )}
                 </div>
               </div>
