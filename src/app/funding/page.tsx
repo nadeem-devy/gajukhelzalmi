@@ -66,8 +66,8 @@ export default function FundingPage() {
     setDDone(false);
   };
 
-  const sortedDonations = [...donations].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sortedDonations = [...donations].filter(d => d.status !== "rejected").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sortedExpenses = [...expenses].filter(e => e.status !== "rejected").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <div className="container-page">
@@ -207,7 +207,7 @@ export default function FundingPage() {
         <div className="card overflow-hidden">
           <div className="px-5 py-3 bg-warmgray-50 border-b border-warmgray-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-warmgray-700">{t("funding.allDonations")}</span>
-            <span className="text-sm text-warmgray-500">{donations.length} {t("funding.records")}</span>
+            <span className="text-sm text-warmgray-500">{sortedDonations.length} {t("funding.records")}</span>
           </div>
           <div className="divide-y divide-warmgray-100">
             {sortedDonations.map((donation) => (
@@ -253,7 +253,7 @@ export default function FundingPage() {
         <div className="card overflow-hidden">
           <div className="px-5 py-3 bg-warmgray-50 border-b border-warmgray-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-warmgray-700">{t("funding.allExpenses")}</span>
-            <span className="text-sm text-warmgray-500">{expenses.length} {t("funding.records")}</span>
+            <span className="text-sm text-warmgray-500">{sortedExpenses.length} {t("funding.records")}</span>
           </div>
           <div className="divide-y divide-warmgray-100">
             {sortedExpenses.map((expense) => (
