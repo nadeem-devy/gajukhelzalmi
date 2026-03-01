@@ -90,6 +90,9 @@ export interface Donation {
   campaignId?: string;
   notes?: string;
   recordedBy: string;
+  status: "pending" | "approved" | "rejected";
+  approvedBy?: string;
+  approvedAt?: string;
 }
 
 export interface Expense {

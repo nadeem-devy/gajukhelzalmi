@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadDonations, appendRow, donationToRow, readAllRows, updateRow, campaignToRow, rowToCampaign, readAllRows as readRows } from "@/lib/google-sheets";
+import { loadDonations, appendRow, donationToRow } from "@/lib/google-sheets";
 import { getCached, setCache, invalidateCache } from "@/lib/cache";
 import { generateId } from "@/lib/utils";
 import type { Donation } from "@/lib/types";
@@ -33,23 +33,10 @@ export async function POST(request: Request) {
       campaignId: campaignId || undefined,
       notes: notes || undefined,
       recordedBy,
+      status: "pending",
     };
 
     await appendRow("Donations", donationToRow(newDonation));
-
-    // Update campaign collectedAmount if linked
-    if (campaignId) {
-      const campRows = await readAllRows("Campaigns");
-      const campIndex = campRows.findIndex((r) => r[0] === campaignId);
-      if (campIndex >= 0) {
-        const row = campRows[campIndex];
-        const newCollected = (Number(row[6]) || 0) + Number(amount);
-        row[6] = String(newCollected);
-        await updateRow("Campaigns", campIndex, row.map(v => v || ""));
-        invalidateCache("campaigns");
-      }
-    }
-
     invalidateCache("donations");
     return NextResponse.json(newDonation, { status: 201 });
   } catch (error) {

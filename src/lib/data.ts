@@ -43,6 +43,7 @@ function toDonations(raw: DonRaw[], prefix: string, campaignId: string): Donatio
     anonymous: d[0] === "Anonymous" || d[0] === "unknown",
     campaignId,
     recordedBy: "u1",
+    status: "approved",
   }));
 }
 

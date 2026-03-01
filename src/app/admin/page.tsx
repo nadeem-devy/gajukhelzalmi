@@ -18,8 +18,8 @@ import {
 
 export default function AdminPage() {
   const { t } = useLang();
-  const { user, canViewAdminPanel, isSuperAdmin, canManageRequests } = useAuth();
-  const { campaigns, expenses, requests, aidRecords, getFundingSummary } = useStore();
+  const { user, canViewAdminPanel, isSuperAdmin, canManageRequests, canApproveDonations } = useAuth();
+  const { campaigns, expenses, requests, aidRecords, donations, getFundingSummary } = useStore();
   const funding = getFundingSummary();
 
   if (!canViewAdminPanel) {
@@ -36,12 +36,14 @@ export default function AdminPage() {
   }
 
   const pendingExpenses = expenses.filter((e) => e.status === "pending");
+  const pendingDonations = donations.filter((d) => d.status === "pending");
   const pendingRequests = requests.filter((r) => r.status === "submitted" || r.status === "reviewing");
   const pendingAid = aidRecords.filter((a) => a.status === "applied" || a.status === "verified");
   const activeCampaigns = campaigns.filter((c) => c.status === "active");
 
   const manageLinks = [
     { href: "/admin/campaigns", label: t("admin.campaigns"), icon: CampaignIcon, color: "bg-primary-50 text-primary-600", desc: `${activeCampaigns.length} ${t("admin.active")}`, show: true },
+    { href: "/admin/donations", label: t("admin.donations"), icon: FundingIcon, color: "bg-emerald-50 text-emerald-600", desc: `${pendingDonations.length} ${t("admin.pending")}`, show: canApproveDonations },
     { href: "/admin/expenses", label: t("admin.expenses"), icon: FundingIcon, color: "bg-yellow-50 text-yellow-600", desc: `${pendingExpenses.length} ${t("admin.pending")}`, show: true },
     { href: "/admin/aid", label: t("admin.aidRecords"), icon: AidIcon, color: "bg-green-50 text-green-600", desc: `${aidRecords.length} ${t("admin.total")}`, show: isSuperAdmin },
     { href: "/admin/requests", label: t("admin.requests"), icon: RequestIcon, color: "bg-blue-50 text-blue-600", desc: `${pendingRequests.length} ${t("admin.open")}`, show: canManageRequests },
@@ -79,24 +81,24 @@ export default function AdminPage() {
         </div>
         <div className="card p-4">
           <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+              <span className="text-xs font-bold text-emerald-700">{pendingDonations.length}</span>
+            </div>
+            <p className="text-sm text-warmgray-600">{t("admin.pendingDonations")}</p>
+          </div>
+        </div>
+        <div className="card p-4">
+          <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
               <span className="text-xs font-bold text-yellow-700">{pendingExpenses.length}</span>
             </div>
             <p className="text-sm text-warmgray-600">{t("admin.pendingExpenses")}</p>
           </div>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-blue-700">{pendingRequests.length}</span>
-            </div>
-            <p className="text-sm text-warmgray-600">{t("admin.requests")}</p>
-          </div>
-        </div>
       </div>
 
       {/* Action Items */}
-      {(pendingExpenses.length > 0 || pendingRequests.length > 0 || pendingAid.length > 0) && (
+      {(pendingExpenses.length > 0 || pendingDonations.length > 0 || pendingRequests.length > 0 || pendingAid.length > 0) && (
         <>
           <h2 className="text-sm font-bold text-warmgray-700 uppercase tracking-wide mb-3">{t("admin.needsAttention")}</h2>
           <div className="space-y-3 mb-8">
@@ -112,6 +114,24 @@ export default function AdminPage() {
                     </p>
                     <p className="text-xs text-warmgray-500">
                       {t("admin.total")}: {formatCurrency(pendingExpenses.reduce((sum, e) => sum + e.amount, 0))}
+                    </p>
+                  </div>
+                </div>
+                <ChevronRightIcon className="w-4 h-4 text-warmgray-400" />
+              </Link>
+            )}
+            {pendingDonations.length > 0 && canApproveDonations && (
+              <Link href="/admin/donations" className="card-hover p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-50 rounded-lg">
+                    <FundingIcon className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-warmgray-900">
+                      {pendingDonations.length} {t("admin.donationsWaiting")}
+                    </p>
+                    <p className="text-xs text-warmgray-500">
+                      {t("admin.total")}: {formatCurrency(pendingDonations.reduce((sum, d) => sum + d.amount, 0))}
                     </p>
                   </div>
                 </div>

@@ -203,7 +203,7 @@ export function campaignUpdateToRow(u: CampaignUpdate & { campaignId?: string })
 }
 
 // --- Donations ---
-// Columns: id, donorName, amount, source, date, anonymous, campaignId, notes, recordedBy
+// Columns: id, donorName, amount, source, date, anonymous, campaignId, notes, recordedBy, status, approvedBy, approvedAt
 export function rowToDonation(row: string[]): Donation {
   return {
     id: row[0] || "",
@@ -215,11 +215,14 @@ export function rowToDonation(row: string[]): Donation {
     campaignId: row[6] || undefined,
     notes: row[7] || undefined,
     recordedBy: row[8] || "",
+    status: (row[9] as Donation["status"]) || "approved",
+    approvedBy: row[10] || undefined,
+    approvedAt: row[11] || undefined,
   };
 }
 
 export function donationToRow(d: Donation): (string | number | boolean)[] {
-  return [d.id, d.donorName || "", d.amount, d.source, d.date, d.anonymous, d.campaignId || "", d.notes || "", d.recordedBy];
+  return [d.id, d.donorName || "", d.amount, d.source, d.date, d.anonymous, d.campaignId || "", d.notes || "", d.recordedBy, d.status, d.approvedBy || "", d.approvedAt || ""];
 }
 
 // --- Expenses ---

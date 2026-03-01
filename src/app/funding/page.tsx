@@ -141,7 +141,7 @@ export default function FundingPage() {
             <h3 className="text-sm font-bold text-warmgray-900 mb-4">{t("funding.runningBalance")}</h3>
             <div className="space-y-2">
               {/* Show combined timeline of donations and expenses */}
-              {[...sortedDonations.map(d => ({
+              {[...sortedDonations.filter(d => d.status === "approved").map(d => ({
                 type: "in" as const,
                 date: d.date,
                 description: d.anonymous ? t("funding.anonymousDonation") : d.donorName || t("funding.donation"),
@@ -195,9 +195,12 @@ export default function FundingPage() {
                      donation.source === "online" ? "📱" : "?"}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-warmgray-800">
-                      {donation.anonymous ? t("funding.anonymousDonor") : td(`donor.${donation.donorName}`, donation.donorName || "") || t("funding.donation")}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-warmgray-800">
+                        {donation.anonymous ? t("funding.anonymousDonor") : td(`donor.${donation.donorName}`, donation.donorName || "") || t("funding.donation")}
+                      </p>
+                      {donation.status !== "approved" && <Badge status={donation.status} />}
+                    </div>
                     <p className="text-xs text-warmgray-500">
                       {formatDate(donation.date)} &middot; {t(`donationSource.${donation.source}`)}
                       {donation.notes && ` &middot; ${donation.notes}`}
@@ -247,15 +250,15 @@ export default function FundingPage() {
       )}
       {/* Record Donation Modal */}
       {showDonateForm && (
-        <Modal isOpen={showDonateForm} onClose={closeDonateForm} title={dDone ? t("funding.donationRecorded") : t("funding.recordDonation")}>
+        <Modal isOpen={showDonateForm} onClose={closeDonateForm} title={dDone ? t("funding.donationSubmitted") : t("funding.recordDonation")}>
           {dDone ? (
             <div className="text-center py-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircleIcon className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ClockIcon className="w-8 h-8 text-yellow-600" />
               </div>
-              <h3 className="text-lg font-bold text-warmgray-900 mb-2">{t("funding.recorded")}</h3>
+              <h3 className="text-lg font-bold text-warmgray-900 mb-2">{t("funding.submittedForApproval")}</h3>
               <p className="text-sm text-warmgray-500 mb-6">
-                {t("funding.recordedDesc")}
+                {t("funding.submittedForApprovalDesc")}
               </p>
               <button onClick={closeDonateForm} className="btn-primary justify-center w-full">{t("common.done")}</button>
             </div>

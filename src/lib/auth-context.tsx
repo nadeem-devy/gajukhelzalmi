@@ -22,6 +22,7 @@ interface AuthContextType {
   canManageAid: boolean;
   canManageRequests: boolean;
   canRecordDonations: boolean;
+  canApproveDonations: boolean;
   canContribute: boolean;
   canViewAdminPanel: boolean;
   canViewFullNames: boolean;
@@ -47,6 +48,7 @@ const AuthContext = createContext<AuthContextType>({
   canManageAid: false,
   canManageRequests: false,
   canRecordDonations: false,
+  canApproveDonations: false,
   canContribute: false,
   canViewAdminPanel: false,
   canViewFullNames: false,
@@ -87,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const canManageAid = isSuperAdmin;
   const canManageRequests = isSuperAdmin || isVolunteer;
   const canRecordDonations = isSuperAdmin || isVolunteer;
+  const canApproveDonations = isSuperAdmin || isVolunteer;
   const canContribute = isLoggedIn;
   const canViewAdminPanel = isSuperAdmin || isVolunteer;
   const canViewFullNames = isSuperAdmin || isVolunteer;
@@ -99,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user, role, login, logout, loginLoading,
       isSuperAdmin, isVolunteer, isEndUser, isLoggedIn,
       canManageCampaigns, canApproveExpenses, canSubmitExpenses,
-      canManageAid, canManageRequests, canRecordDonations,
+      canManageAid, canManageRequests, canRecordDonations, canApproveDonations,
       canContribute, canViewAdminPanel, canViewFullNames,
       canViewAuditTrail, canGenerateReports, isAdmin,
     }}>

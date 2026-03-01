@@ -84,6 +84,8 @@ interface StoreContextType {
     notes?: string;
     recordedBy: string;
   }) => void;
+  approveDonation: (id: string, approverUserId: string) => void;
+  rejectDonation: (id: string) => void;
 
   // Campaign Actions
   createCampaign: (data: {
@@ -438,20 +440,48 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       campaignId: data.campaignId,
       notes: data.notes,
       recordedBy: data.recordedBy,
+      status: "pending",
     };
     setDonations((prev) => [newDonation, ...prev]);
-    if (data.campaignId) {
+    try {
+      const result = await apiPost<Donation>("/api/donations", data);
+      setDonations((prev) => prev.map((d) => (d.id === tempId ? result : d)));
+    } catch {
+      loadData();
+    }
+  }, [loadData]);
+
+  const approveDonation = useCallback(async (id: string, approverUserId: string) => {
+    const donation = donations.find((d) => d.id === id);
+    setDonations((prev) =>
+      prev.map((d) =>
+        d.id === id
+          ? { ...d, status: "approved" as const, approvedBy: approverUserId, approvedAt: new Date().toISOString().split("T")[0] }
+          : d
+      )
+    );
+    if (donation?.campaignId) {
       setCampaigns((prev) =>
         prev.map((c) =>
-          c.id === data.campaignId
-            ? { ...c, collectedAmount: c.collectedAmount + data.amount }
+          c.id === donation.campaignId
+            ? { ...c, collectedAmount: c.collectedAmount + donation.amount }
             : c
         )
       );
     }
     try {
-      const result = await apiPost<Donation>("/api/donations", data);
-      setDonations((prev) => prev.map((d) => (d.id === tempId ? result : d)));
+      await apiPatch(`/api/donations/${id}`, { action: "approve", approverUserId });
+    } catch {
+      loadData();
+    }
+  }, [donations, loadData]);
+
+  const rejectDonation = useCallback(async (id: string) => {
+    setDonations((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, status: "rejected" as const } : d))
+    );
+    try {
+      await apiPatch(`/api/donations/${id}`, { action: "reject" });
     } catch {
       loadData();
     }
@@ -531,13 +561,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // ===== Computed =====
   const getFundingSummary = useCallback((): FundingSummary => {
-    const totalCollected = donations.reduce((sum, d) => sum + d.amount, 0);
+    const approvedDonations = donations.filter((d) => d.status === "approved");
+    const totalCollected = approvedDonations.reduce((sum, d) => sum + d.amount, 0);
     const totalSpent = expenses
       .filter((e) => e.status === "approved")
       .reduce((sum, e) => sum + e.amount, 0);
 
     const now = new Date();
-    const thisMonth = donations
+    const thisMonth = approvedDonations
       .filter((d) => {
         const date = new Date(d.date);
         return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
@@ -551,7 +582,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       })
       .reduce((sum, e) => sum + e.amount, 0);
 
-    const thisYear = donations
+    const thisYear = approvedDonations
       .filter((d) => new Date(d.date).getFullYear() === now.getFullYear())
       .reduce((sum, d) => sum + d.amount, 0);
 
@@ -600,6 +631,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         dismissNotification,
         markAllNotificationsRead,
         recordDonation,
+        approveDonation,
+        rejectDonation,
         createCampaign,
         addActivity,
       }}
