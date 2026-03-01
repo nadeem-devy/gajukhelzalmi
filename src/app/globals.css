@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-earth-50 text-warmgray-800 antialiased;
+    font-feature-settings: "cv11", "ss01";
+    /* Add bottom padding on mobile for the bottom tab bar */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Bottom safe area for notched phones */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 py-6;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-warmgray-200 shadow-sm;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-md hover:border-warmgray-300;
+  }
+
+  .section-title {
+    @apply text-xl sm:text-2xl font-bold text-warmgray-900;
+  }
+
+  .section-subtitle {
+    @apply text-warmgray-500 text-sm mt-1;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white font-semibold rounded-xl
+           hover:bg-primary-700 active:bg-primary-800 transition-colors text-sm;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-white text-warmgray-700 font-semibold rounded-xl
+           border border-warmgray-300 hover:bg-warmgray-50 active:bg-warmgray-100 transition-colors text-sm;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-2 text-warmgray-600 font-medium rounded-lg
+           hover:bg-warmgray-100 active:bg-warmgray-200 transition-colors text-sm;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white border border-warmgray-300 rounded-xl text-warmgray-800
+           placeholder:text-warmgray-400 focus:outline-none focus:ring-2 focus:ring-primary-500
+           focus:border-primary-500 text-base;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .stat-value {
+    @apply text-2xl sm:text-3xl font-extrabold text-warmgray-900;
+  }
+
+  .stat-label {
+    @apply text-xs sm:text-sm text-warmgray-500 font-medium mt-0.5;
+  }
+
+  .page-header {
+    @apply mb-6;
+  }
+
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+
+  .divider {
+    @apply border-t border-warmgray-200 my-4;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mobile app bottom nav spacing */
+@media (max-width: 1023px) {
+  main {
+    padding-bottom: 4.5rem;
+  }
+}
+
+/* Slide-up animation for bottom sheet */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out;
+}
+
+/* Standalone PWA mode — hide browser UI elements */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Print styles for reports */
+@media print {
+  nav, footer, .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #e5e5e5 !important;
+  }
+}

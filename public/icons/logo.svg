@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16a34a"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.7"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Subtle inner glow -->
+  <rect x="16" y="16" width="480" height="480" rx="80" fill="none" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
+  <!-- Mountain range -->
+  <path d="M56 380 L160 220 L210 280 L280 170 L340 250 L390 190 L456 380 Z" fill="url(#mountain)" opacity="0.25"/>
+  <!-- Main mountain peak -->
+  <path d="M160 380 L256 200 L352 380 Z" fill="white" opacity="0.3"/>
+  <!-- Snow cap -->
+  <path d="M232 240 L256 200 L280 240 L268 238 L256 225 L244 238 Z" fill="white" opacity="0.5"/>
+  <!-- Rising sun/crescent behind mountain -->
+  <circle cx="340" cy="195" r="40" fill="url(#sun)" opacity="0.85"/>
+  <circle cx="355" cy="185" r="35" fill="url(#bg)"/>
+  <!-- Hands/community circle -->
+  <g transform="translate(256, 310)" opacity="0.9">
+    <!-- Two hands forming a heart/cup shape -->
+    <path d="M-55,30 C-55,-10 -30,-35 0,-50 C30,-35 55,-10 55,30 C55,50 30,70 0,70 C-30,70 -55,50 -55,30Z" fill="white" opacity="0.2"/>
+    <path d="M-45,28 C-45,-5 -25,-28 0,-40 C25,-28 45,-5 45,28" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <!-- GZ Text -->
+  <text x="256" y="320" text-anchor="middle" font-family="'SF Pro Display', 'Segoe UI', system-ui, sans-serif" font-size="130" font-weight="800" fill="white" letter-spacing="-4">GZ</text>
+  <!-- Urdu text below -->
+  <text x="256" y="420" text-anchor="middle" font-family="'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif" font-size="48" fill="white" opacity="0.85">زلمی</text>
+  <!-- Thin decorative line -->
+  <line x1="180" y1="355" x2="332" y2="355" stroke="white" stroke-opacity="0.3" stroke-width="2" stroke-linecap="round"/>
+</svg>

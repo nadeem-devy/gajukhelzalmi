@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16a34a"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <path d="M100 390 L185 260 L220 300 L275 200 L320 265 L360 220 L420 390 Z" fill="white" opacity="0.15"/>
+  <path d="M185 390 L256 230 L327 390 Z" fill="white" opacity="0.2"/>
+  <circle cx="335" cy="215" r="26" fill="url(#sun)" opacity="0.8"/>
+  <circle cx="345" cy="209" r="23" fill="url(#bg)"/>
+  <text x="256" y="330" text-anchor="middle" font-family="'SF Pro Display',system-ui,sans-serif" font-size="120" font-weight="800" fill="white" letter-spacing="-3">GZ</text>
+  <text x="256" y="400" text-anchor="middle" font-family="serif" font-size="42" fill="white" opacity="0.85">زلمی</text>
+</svg>
