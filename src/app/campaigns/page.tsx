@@ -30,20 +30,21 @@ export default function CampaignsPage() {
   const [donateAmount, setDonateAmount] = useState("");
   const [donateSource, setDonateSource] = useState<DonationSource>("cash");
   const [donateName, setDonateName] = useState("");
-  const [donateAnonymous, setDonateAnonymous] = useState(false);
+  const [donateReceiver, setDonateReceiver] = useState("");
   const [donated, setDonated] = useState(false);
 
   const filtered = filter === "all" ? campaigns : campaigns.filter((c) => c.status === filter);
 
   const handleDonate = () => {
-    if (!donateAmount || !donateCampaign) return;
+    if (!donateAmount || !donateCampaign || !donateName || !donateReceiver) return;
     recordDonation({
       amount: Number(donateAmount),
       source: donateSource,
-      donorName: donateAnonymous ? undefined : (donateName || user?.name),
-      anonymous: donateAnonymous,
+      donorName: donateName,
+      anonymous: false,
       campaignId: donateCampaign.id,
       recordedBy: user?.id || "public",
+      receiverName: donateReceiver,
     });
     setDonated(true);
   };
@@ -52,7 +53,7 @@ export default function CampaignsPage() {
     setDonateCampaign(null);
     setDonateAmount("");
     setDonateName("");
-    setDonateAnonymous(false);
+    setDonateReceiver("");
     setDonateSource("cash");
     setDonated(false);
   };
@@ -252,6 +253,16 @@ export default function CampaignsPage() {
           ) : (
             <div className="space-y-4">
               <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.fullName")} <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder={t("campaigns.fullNamePlaceholder")}
+                  value={donateName}
+                  onChange={(e) => setDonateName(e.target.value)}
+                />
+              </div>
+              <div>
                 <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.amountRs")} <span className="text-red-500">*</span></label>
                 <input
                   type="number"
@@ -262,9 +273,27 @@ export default function CampaignsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.paymentMethod")}</label>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.receiverName")} <span className="text-red-500">*</span></label>
+                <div className="space-y-2">
+                  {["Gohar Ali", "Jasir Khan", "Asim Khan"].map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => setDonateReceiver(name)}
+                      className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium border transition-colors text-left
+                        ${donateReceiver === name
+                          ? "bg-primary-50 border-primary-300 text-primary-700"
+                          : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"
+                        }`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.accountType")} <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-2 gap-2">
-                  {(["cash", "bank", "online", "other"] as const).map((src) => (
+                  {(["jazzcash", "easypaisa", "bank", "cash"] as const).map((src) => (
                     <button
                       key={src}
                       onClick={() => setDonateSource(src)}
@@ -274,35 +303,15 @@ export default function CampaignsPage() {
                           : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"
                         }`}
                     >
-                      {src === "cash" ? t("campaigns.cash") : src === "bank" ? t("campaigns.bankTransfer") : src === "online" ? t("campaigns.online") : t("campaigns.other")}
+                      {t(`campaigns.${src}`)}
                     </button>
                   ))}
                 </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.yourName")}</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder={user?.name || "Your name"}
-                  value={donateName}
-                  onChange={(e) => setDonateName(e.target.value)}
-                  disabled={donateAnonymous}
-                />
-              </div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={donateAnonymous}
-                  onChange={(e) => setDonateAnonymous(e.target.checked)}
-                  className="w-4 h-4 rounded border-warmgray-300 text-primary-600"
-                />
-                <span className="text-sm text-warmgray-600">{t("campaigns.donateAnonymously")}</span>
-              </label>
               <button
                 onClick={handleDonate}
-                disabled={!donateAmount || Number(donateAmount) <= 0}
-                className={`w-full justify-center mt-2 ${donateAmount && Number(donateAmount) > 0 ? "btn-primary" : "btn-secondary opacity-50 cursor-not-allowed"}`}
+                disabled={!donateAmount || Number(donateAmount) <= 0 || !donateName || !donateReceiver}
+                className={`w-full justify-center mt-2 ${donateAmount && Number(donateAmount) > 0 && donateName && donateReceiver ? "btn-primary" : "btn-secondary opacity-50 cursor-not-allowed"}`}
               >
                 <FundingIcon className="w-4 h-4" />
                 {`${t("campaigns.contributeRs")} ${donateAmount ? Number(donateAmount).toLocaleString() : "0"}`}

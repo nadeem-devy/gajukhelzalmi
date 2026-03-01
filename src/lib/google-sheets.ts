@@ -203,13 +203,19 @@ export function campaignUpdateToRow(u: CampaignUpdate & { campaignId?: string })
 }
 
 // --- Donations ---
-// Columns: id, donorName, amount, source, date, anonymous, campaignId, notes, recordedBy, status, approvedBy, approvedAt
+// Columns: id, donorName, amount, source, date, anonymous, campaignId, notes, recordedBy, status, approvedBy, approvedAt, receiverName
+function mapDonationSource(raw: string): Donation["source"] {
+  if (raw === "jazzcash" || raw === "easypaisa" || raw === "bank" || raw === "cash") return raw;
+  if (raw === "online") return "jazzcash";
+  return "cash";
+}
+
 export function rowToDonation(row: string[]): Donation {
   return {
     id: row[0] || "",
     donorName: row[1] || undefined,
     amount: Number(row[2]) || 0,
-    source: (row[3] as Donation["source"]) || "cash",
+    source: mapDonationSource(row[3] || ""),
     date: row[4] || "",
     anonymous: row[5] === "TRUE" || row[5] === "true",
     campaignId: row[6] || undefined,
@@ -218,11 +224,12 @@ export function rowToDonation(row: string[]): Donation {
     status: (row[9] as Donation["status"]) || "approved",
     approvedBy: row[10] || undefined,
     approvedAt: row[11] || undefined,
+    receiverName: row[12] || undefined,
   };
 }
 
 export function donationToRow(d: Donation): (string | number | boolean)[] {
-  return [d.id, d.donorName || "", d.amount, d.source, d.date, d.anonymous, d.campaignId || "", d.notes || "", d.recordedBy, d.status, d.approvedBy || "", d.approvedAt || ""];
+  return [d.id, d.donorName || "", d.amount, d.source, d.date, d.anonymous, d.campaignId || "", d.notes || "", d.recordedBy, d.status, d.approvedBy || "", d.approvedAt || "", d.receiverName || ""];
 }
 
 // --- Expenses ---

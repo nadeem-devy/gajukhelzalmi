@@ -83,6 +83,7 @@ interface StoreContextType {
     campaignId?: string;
     notes?: string;
     recordedBy: string;
+    receiverName?: string;
   }) => void;
   approveDonation: (id: string, approverUserId: string) => void;
   rejectDonation: (id: string) => void;
@@ -428,6 +429,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     campaignId?: string;
     notes?: string;
     recordedBy: string;
+    receiverName?: string;
   }) => {
     const tempId = generateId();
     const newDonation: Donation = {
@@ -440,6 +442,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       campaignId: data.campaignId,
       notes: data.notes,
       recordedBy: data.recordedBy,
+      receiverName: data.receiverName,
       status: "pending",
     };
     setDonations((prev) => [newDonation, ...prev]);

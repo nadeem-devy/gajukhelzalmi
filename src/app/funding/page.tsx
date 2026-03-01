@@ -32,19 +32,21 @@ export default function FundingPage() {
   const [dAmount, setDAmount] = useState("");
   const [dSource, setDSource] = useState<DonationSource>("cash");
   const [dName, setDName] = useState("");
+  const [dReceiver, setDReceiver] = useState("");
   const [dAnonymous, setDAnonymous] = useState(false);
   const [dNotes, setDNotes] = useState("");
   const [dDone, setDDone] = useState(false);
 
   const handleRecordDonation = () => {
-    if (!dAmount || !user) return;
+    if (!dAmount || !user || !dName || !dReceiver) return;
     recordDonation({
       amount: Number(dAmount),
       source: dSource,
-      donorName: dAnonymous ? undefined : (dName || "Anonymous"),
-      anonymous: dAnonymous,
+      donorName: dName,
+      anonymous: false,
       notes: dNotes || undefined,
       recordedBy: user.id,
+      receiverName: dReceiver,
     });
     setDDone(true);
   };
@@ -53,6 +55,7 @@ export default function FundingPage() {
     setShowDonateForm(false);
     setDAmount("");
     setDName("");
+    setDReceiver("");
     setDAnonymous(false);
     setDSource("cash");
     setDNotes("");
@@ -186,13 +189,15 @@ export default function FundingPage() {
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold
                     ${donation.source === "cash" ? "bg-green-100 text-green-700" :
                       donation.source === "bank" ? "bg-blue-100 text-blue-700" :
-                      donation.source === "online" ? "bg-purple-100 text-purple-700" :
+                      donation.source === "jazzcash" ? "bg-red-100 text-red-700" :
+                      donation.source === "easypaisa" ? "bg-emerald-100 text-emerald-700" :
                       "bg-warmgray-100 text-warmgray-700"
                     }`}
                   >
                     {donation.source === "cash" ? "₨" :
                      donation.source === "bank" ? "🏦" :
-                     donation.source === "online" ? "📱" : "?"}
+                     donation.source === "jazzcash" ? "📱" :
+                     donation.source === "easypaisa" ? "📱" : "?"}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -265,40 +270,51 @@ export default function FundingPage() {
           ) : (
             <div className="space-y-4">
               <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.fullName")} <span className="text-red-500">*</span></label>
+                <input type="text" className="input-field" placeholder={t("campaigns.fullNamePlaceholder")} value={dName} onChange={(e) => setDName(e.target.value)} />
+              </div>
+              <div>
                 <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("funding.amountRs")} <span className="text-red-500">*</span></label>
                 <input type="number" className="input-field" placeholder={lang === "ur" ? "مثلاً ۱۰۰۰۰" : "e.g. 10000"} value={dAmount} onChange={(e) => setDAmount(e.target.value)} />
               </div>
               <div>
-                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("funding.source")}</label>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.receiverName")} <span className="text-red-500">*</span></label>
+                <div className="space-y-2">
+                  {["Gohar Ali", "Jasir Khan", "Asim Khan"].map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => setDReceiver(name)}
+                      className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium border transition-colors text-left
+                        ${dReceiver === name ? "bg-primary-50 border-primary-300 text-primary-700" : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"}`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.accountType")} <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-2 gap-2">
-                  {(["cash", "bank", "online", "other"] as const).map((src) => (
+                  {(["jazzcash", "easypaisa", "bank", "cash"] as const).map((src) => (
                     <button
                       key={src}
                       onClick={() => setDSource(src)}
                       className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors
                         ${dSource === src ? "bg-primary-50 border-primary-300 text-primary-700" : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"}`}
                     >
-                      {src === "cash" ? t("donationSource.cash") : src === "bank" ? t("donationSource.bank") : src === "online" ? t("donationSource.online") : t("donationSource.other")}
+                      {t(`funding.${src}`)}
                     </button>
                   ))}
                 </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("funding.donorName")}</label>
-                <input type="text" className="input-field" placeholder={t("funding.nameOfDonor")} value={dName} onChange={(e) => setDName(e.target.value)} disabled={dAnonymous} />
-              </div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={dAnonymous} onChange={(e) => setDAnonymous(e.target.checked)} className="w-4 h-4 rounded border-warmgray-300 text-primary-600" />
-                <span className="text-sm text-warmgray-600">{t("funding.anonymousDonationCheck")}</span>
-              </label>
               <div>
                 <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("funding.notes")} <span className="text-warmgray-400">({t("funding.optional")})</span></label>
                 <input type="text" className="input-field" placeholder={t("funding.forRamadan")} value={dNotes} onChange={(e) => setDNotes(e.target.value)} />
               </div>
               <button
                 onClick={handleRecordDonation}
-                disabled={!dAmount || Number(dAmount) <= 0}
-                className={`w-full justify-center mt-2 ${dAmount && Number(dAmount) > 0 ? "btn-primary" : "btn-secondary opacity-50 cursor-not-allowed"}`}
+                disabled={!dAmount || Number(dAmount) <= 0 || !dName || !dReceiver}
+                className={`w-full justify-center mt-2 ${dAmount && Number(dAmount) > 0 && dName && dReceiver ? "btn-primary" : "btn-secondary opacity-50 cursor-not-allowed"}`}
               >
                 {t("funding.recordDonationBtn")}
               </button>

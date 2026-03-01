@@ -21,7 +21,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { amount, source, donorName, anonymous, campaignId, notes, recordedBy } = body;
+    const { amount, source, donorName, anonymous, campaignId, notes, recordedBy, receiverName } = body;
 
     const newDonation: Donation = {
       id: generateId(),
@@ -33,6 +33,7 @@ export async function POST(request: Request) {
       campaignId: campaignId || undefined,
       notes: notes || undefined,
       recordedBy,
+      receiverName: receiverName || undefined,
       status: "pending",
     };
 

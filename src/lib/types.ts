@@ -78,7 +78,7 @@ export interface Campaign {
 }
 
 // --- Donations / Funding ---
-export type DonationSource = "cash" | "bank" | "online" | "other";
+export type DonationSource = "cash" | "bank" | "jazzcash" | "easypaisa";
 
 export interface Donation {
   id: string;
@@ -90,6 +90,7 @@ export interface Donation {
   campaignId?: string;
   notes?: string;
   recordedBy: string;
+  receiverName?: string;
   status: "pending" | "approved" | "rejected";
   approvedBy?: string;
   approvedAt?: string;
