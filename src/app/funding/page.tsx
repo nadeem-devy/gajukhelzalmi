@@ -29,6 +29,7 @@ export default function FundingPage() {
   const { donations, expenses, getFundingSummary, recordDonation } = useStore();
   const { t, td, lang } = useLang();
   const [tab, setTab] = useState<TabType>("overview");
+  const [searchQuery, setSearchQuery] = useState("");
   const funding = getFundingSummary();
 
   // Record donation modal
@@ -68,6 +69,14 @@ export default function FundingPage() {
 
   const sortedDonations = [...donations].filter(d => d.status !== "rejected").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const sortedExpenses = [...expenses].filter(e => e.status !== "rejected").sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const q = searchQuery.toLowerCase().trim();
+  const filteredDonations = q
+    ? sortedDonations.filter(d => (d.donorName || "").toLowerCase().includes(q) || d.amount.toString().includes(q) || d.source.toLowerCase().includes(q))
+    : sortedDonations;
+  const filteredExpenses = q
+    ? sortedExpenses.filter(e => e.description.toLowerCase().includes(q) || e.amount.toString().includes(q) || e.category.toLowerCase().includes(q))
+    : sortedExpenses;
 
   return (
     <div className="container-page">
@@ -128,7 +137,7 @@ export default function FundingPage() {
         {(["overview", "donations", "expenses"] as const).map((tabKey) => (
           <button
             key={tabKey}
-            onClick={() => setTab(tabKey)}
+            onClick={() => { setTab(tabKey); setSearchQuery(""); }}
             className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${tab === tabKey
                 ? "bg-white text-warmgray-900 shadow-sm"
@@ -207,10 +216,27 @@ export default function FundingPage() {
         <div className="card overflow-hidden">
           <div className="px-5 py-3 bg-warmgray-50 border-b border-warmgray-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-warmgray-700">{t("funding.allDonations")}</span>
-            <span className="text-sm text-warmgray-500">{sortedDonations.length} {t("funding.records")}</span>
+            <span className="text-sm text-warmgray-500">{filteredDonations.length} {t("funding.records")}</span>
+          </div>
+          <div className="px-4 py-2.5 border-b border-warmgray-100">
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warmgray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                value={tab === "donations" ? searchQuery : ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("funding.searchDonations")}
+                className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-warmgray-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+              />
+            </div>
           </div>
           <div className="divide-y divide-warmgray-100">
-            {sortedDonations.map((donation) => (
+            {filteredDonations.length === 0 && (
+              <div className="px-5 py-8 text-center text-sm text-warmgray-400">{t("funding.noResults")}</div>
+            )}
+            {filteredDonations.map((donation) => (
               <div key={donation.id} className="px-5 py-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold
@@ -253,10 +279,27 @@ export default function FundingPage() {
         <div className="card overflow-hidden">
           <div className="px-5 py-3 bg-warmgray-50 border-b border-warmgray-100 flex items-center justify-between">
             <span className="text-sm font-semibold text-warmgray-700">{t("funding.allExpenses")}</span>
-            <span className="text-sm text-warmgray-500">{sortedExpenses.length} {t("funding.records")}</span>
+            <span className="text-sm text-warmgray-500">{filteredExpenses.length} {t("funding.records")}</span>
+          </div>
+          <div className="px-4 py-2.5 border-b border-warmgray-100">
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warmgray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                value={tab === "expenses" ? searchQuery : ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("funding.searchExpenses")}
+                className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-warmgray-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+              />
+            </div>
           </div>
           <div className="divide-y divide-warmgray-100">
-            {sortedExpenses.map((expense) => (
+            {filteredExpenses.length === 0 && (
+              <div className="px-5 py-8 text-center text-sm text-warmgray-400">{t("funding.noResults")}</div>
+            )}
+            {filteredExpenses.map((expense) => (
               <div key={expense.id} className="px-5 py-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex flex-col items-center">

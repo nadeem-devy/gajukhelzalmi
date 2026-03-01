@@ -21,7 +21,6 @@ import {
 export const users: User[] = [
   // Super Admins
   { id: "u1", name: "Nadeem Khan", role: "super_admin", village: "Gajukhel", joinedAt: "2024-07-08" },
-  { id: "u2", name: "Abdul Wahab Khattak", role: "super_admin", village: "Gajukhel", joinedAt: "2024-07-08" },
   // WhatsApp Group Admins / Volunteers
   { id: "u3", name: "Gohar Ali", role: "volunteer", village: "Gajukhel", joinedAt: "2024-07-08" },
   { id: "u4", name: "Asim Khan", role: "volunteer", village: "Gajukhel", joinedAt: "2024-08-05" },
@@ -485,7 +484,7 @@ export const activities: Activity[] = [
     date: "2024-08-01",
     location: "Gajukhel Village",
     status: "completed",
-    volunteers: ["Nadeem Khan", "Abdul Wahab Khattak", "Gohar Ali", "10+ villagers"],
+    volunteers: ["Nadeem Khan", "Gohar Ali", "10+ villagers"],
     createdBy: "u1",
     createdAt: "2024-07-30",
   },
@@ -521,7 +520,7 @@ export const activities: Activity[] = [
     date: "2024-11-16",
     location: "Gajukhel Village",
     status: "completed",
-    volunteers: ["Nadeem Khan", "Abdul Wahab Khattak", "Medical team"],
+    volunteers: ["Nadeem Khan", "Medical team"],
     createdBy: "u1",
     createdAt: "2024-11-10",
   },
@@ -533,7 +532,7 @@ export const activities: Activity[] = [
     date: "2025-03-15",
     location: "Gajukhel Village",
     status: "completed",
-    volunteers: ["Nadeem Khan", "Abdul Wahab Khattak", "Gohar Ali", "Asim Khan", "Jasir Khan", "20+ volunteers"],
+    volunteers: ["Nadeem Khan", "Gohar Ali", "Asim Khan", "Jasir Khan", "20+ volunteers"],
     createdBy: "u1",
     createdAt: "2025-03-01",
   },
