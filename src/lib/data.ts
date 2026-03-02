@@ -659,6 +659,8 @@ export const expenses: Expense[] = [
   { id: "e13", description: "Road cleaning — Jameer Mama", amount: 8000, category: "Road Maintenance", date: "2025-08-29", campaignId: "camp-main", approvedBy: "u1", status: "approved", submittedBy: "u3", submittedAt: "2025-08-28", approvedAt: "2025-08-29" },
   { id: "e14", description: "Medical camp — tea & refreshments for doctor's team", amount: 2700, category: "Medical", date: "2025-10-14", campaignId: "camp-main", approvedBy: "u3", status: "approved", submittedBy: "u3", submittedAt: "2025-10-14", approvedAt: "2025-10-14" },
   { id: "e15", description: "Transfer to Hamza Medical Fund from main fund", amount: 20000, category: "Fund Transfer", date: "2025-10-22", campaignId: "camp-main", approvedBy: "u1", status: "approved", submittedBy: "u1", submittedAt: "2025-10-20", approvedAt: "2025-10-22" },
+  { id: "e16", description: "Hamza medical treatment — full fund transferred", amount: 139000, category: "Medical Treatment", date: "2025-10-25", campaignId: "camp-hamza", approvedBy: "u1", status: "approved", submittedBy: "u1", submittedAt: "2025-10-22", approvedAt: "2025-10-25" },
+  { id: "e17", description: "Full amount transferred to Ziyad's family", amount: 350500, category: "Family Support", date: "2025-07-22", campaignId: "camp-ziyad", approvedBy: "u1", status: "approved", submittedBy: "u1", submittedAt: "2025-07-20", approvedAt: "2025-07-22" },
 ];
 
 // --- Beneficiaries (sample — real names not in sheet for privacy) ---
