@@ -60,7 +60,6 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
-  const [restored, setRestored] = useState(false);
 
   // Restore session from localStorage on mount
   useEffect(() => {
@@ -72,23 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore
     }
-    setRestored(true);
   }, []);
-
-  // Persist session changes to localStorage
-  useEffect(() => {
-    if (!restored) return;
-    if (user) {
-      localStorage.setItem("gz_user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("gz_user");
-    }
-  }, [user, restored]);
 
   const login = useCallback(async (name: string, password: string): Promise<string | null> => {
     setLoginLoading(true);
     try {
       const result = await apiPost<User>("/api/auth/login", { name, password });
+      localStorage.setItem("gz_user", JSON.stringify(result));
       setUser(result);
       return null; // success
     } catch (err) {
@@ -98,7 +87,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    localStorage.removeItem("gz_user");
+    setUser(null);
+  };
 
   const role: UserRole = user?.role || "public";
   const isSuperAdmin = role === "super_admin";
