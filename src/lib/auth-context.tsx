@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { User, UserRole } from "./types";
 import { apiPost } from "./api-client";
 
@@ -58,8 +58,24 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const stored = localStorage.getItem("gz_user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loginLoading, setLoginLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("gz_user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("gz_user");
+    }
+  }, [user]);
 
   const login = useCallback(async (name: string, password: string): Promise<string | null> => {
     setLoginLoading(true);
