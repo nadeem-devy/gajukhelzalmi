@@ -58,24 +58,32 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window === "undefined") return null;
+  const [user, setUser] = useState<User | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [restored, setRestored] = useState(false);
+
+  // Restore session from localStorage on mount
+  useEffect(() => {
     try {
       const stored = localStorage.getItem("gz_user");
-      return stored ? JSON.parse(stored) : null;
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
     } catch {
-      return null;
+      // ignore
     }
-  });
-  const [loginLoading, setLoginLoading] = useState(false);
+    setRestored(true);
+  }, []);
 
+  // Persist session changes to localStorage
   useEffect(() => {
+    if (!restored) return;
     if (user) {
       localStorage.setItem("gz_user", JSON.stringify(user));
     } else {
       localStorage.removeItem("gz_user");
     }
-  }, [user]);
+  }, [user, restored]);
 
   const login = useCallback(async (name: string, password: string): Promise<string | null> => {
     setLoginLoading(true);
