@@ -168,6 +168,13 @@ const ur: Dictionary = {
     donateAnonymously: "گمنام طور پر دیں",
     contributeRs: "تعاون روپے",
     contributeTo: "تعاون کریں",
+    recordExpense: "خرچ درج کریں",
+    expenseDescription: "تفصیل",
+    expenseDescriptionPlaceholder: "مثلاً طبی سامان خریدا",
+    expenseAmountRs: "رقم (روپے)",
+    expenseCategory: "قسم",
+    expenseSubmitted: "خرچ جمع ہو گیا",
+    expenseSubmittedDesc: "آپ کا خرچ منظوری کے لیے جمع ہو گیا ہے۔",
   },
 
   funding: {

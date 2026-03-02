@@ -47,6 +47,13 @@ interface StoreContextType {
   getFundingSummary: () => FundingSummary;
 
   // Expense Actions
+  submitExpense: (data: {
+    description: string;
+    amount: number;
+    category: string;
+    campaignId: string;
+    submittedBy: string;
+  }) => void;
   approveExpense: (id: string, approverUserId: string) => void;
   rejectExpense: (id: string) => void;
 
@@ -231,6 +238,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   // ===== Expense Actions =====
+  const submitExpense = useCallback(async (data: {
+    description: string;
+    amount: number;
+    category: string;
+    campaignId: string;
+    submittedBy: string;
+  }) => {
+    const tempId = generateId();
+    const newExpense: Expense = {
+      id: tempId,
+      description: data.description,
+      amount: data.amount,
+      category: data.category,
+      date: new Date().toISOString().split("T")[0],
+      campaignId: data.campaignId,
+      status: "pending",
+      submittedBy: data.submittedBy,
+      submittedAt: new Date().toISOString().split("T")[0],
+    };
+    setExpenses((prev) => [newExpense, ...prev]);
+    try {
+      const result = await apiPost<Expense>("/api/expenses", data);
+      setExpenses((prev) => prev.map((e) => (e.id === tempId ? result : e)));
+    } catch {
+      loadData();
+    }
+  }, [loadData]);
+
   const approveExpense = useCallback(async (id: string, approverUserId: string) => {
     setExpenses((prev) =>
       prev.map((e) =>
@@ -620,6 +655,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         refreshData: loadData,
         dataUrduMap,
         getFundingSummary,
+        submitExpense,
         approveExpense,
         rejectExpense,
         verifyAid,

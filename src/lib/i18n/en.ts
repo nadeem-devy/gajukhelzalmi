@@ -166,6 +166,13 @@ const en = {
     donateAnonymously: "Donate anonymously",
     contributeRs: "Contribute Rs",
     contributeTo: "Contribute to",
+    recordExpense: "Record Spent",
+    expenseDescription: "Description",
+    expenseDescriptionPlaceholder: "e.g. Medical supplies purchased",
+    expenseAmountRs: "Amount (Rs)",
+    expenseCategory: "Category",
+    expenseSubmitted: "Expense Submitted",
+    expenseSubmittedDesc: "Your expense has been submitted for admin approval.",
   },
 
   funding: {
