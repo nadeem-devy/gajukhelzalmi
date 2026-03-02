@@ -11,6 +11,8 @@ import Modal from "@/components/ui/modal";
 import {
   ArrowLeftIcon,
   CheckCircleIcon,
+  ClockIcon,
+  PlusIcon,
   AdminIcon,
 } from "@/components/layout/icons";
 import type { Expense } from "@/lib/types";
@@ -18,9 +20,40 @@ import type { Expense } from "@/lib/types";
 export default function AdminExpensesPage() {
   const { t, td } = useLang();
   const { user, canSubmitExpenses, canApproveExpenses } = useAuth();
-  const { expenses, approveExpense, rejectExpense } = useStore();
+  const { expenses, campaigns, approveExpense, rejectExpense, submitExpense } = useStore();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+
+  // Record expense form
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [expDescription, setExpDescription] = useState("");
+  const [expAmount, setExpAmount] = useState("");
+  const [expCategory, setExpCategory] = useState("Medical");
+  const [expCampaignId, setExpCampaignId] = useState("");
+  const [expDone, setExpDone] = useState(false);
+
+  const activeCampaigns = campaigns.filter(c => c.status === "active");
+
+  const handleSubmitExpense = () => {
+    if (!expDescription || !expAmount || !expCampaignId || !user) return;
+    submitExpense({
+      description: expDescription,
+      amount: Number(expAmount),
+      category: expCategory,
+      campaignId: expCampaignId,
+      submittedBy: user.id,
+    });
+    setExpDone(true);
+  };
+
+  const closeExpenseForm = () => {
+    setShowExpenseForm(false);
+    setExpDescription("");
+    setExpAmount("");
+    setExpCategory("Medical");
+    setExpCampaignId(activeCampaigns[0]?.id || "");
+    setExpDone(false);
+  };
 
   if (!canSubmitExpenses) {
     return (
@@ -56,8 +89,16 @@ export default function AdminExpensesPage() {
           <ArrowLeftIcon className="w-4 h-4" />
           {t("adminExpenses.backToAdmin")}
         </Link>
-        <h1 className="section-title">{t("adminExpenses.title")}</h1>
-        <p className="section-subtitle">{t("adminExpenses.subtitle")} &middot; {pendingCount} {t("admin.pending")}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="section-title">{t("adminExpenses.title")}</h1>
+            <p className="section-subtitle">{t("adminExpenses.subtitle")} &middot; {pendingCount} {t("admin.pending")}</p>
+          </div>
+          <button onClick={() => { setShowExpenseForm(true); setExpDone(false); setExpCampaignId(activeCampaigns[0]?.id || ""); }} className="btn-primary">
+            <PlusIcon className="w-4 h-4" />
+            {t("campaigns.recordExpense")}
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -175,6 +216,88 @@ export default function AdminExpensesPage() {
               </div>
             )}
           </div>
+        </Modal>
+      )}
+
+      {/* Record Expense Modal */}
+      {showExpenseForm && (
+        <Modal
+          isOpen={showExpenseForm}
+          onClose={closeExpenseForm}
+          title={expDone ? t("campaigns.expenseSubmitted") : t("campaigns.recordExpense")}
+        >
+          {expDone ? (
+            <div className="text-center py-6">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ClockIcon className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-lg font-bold text-warmgray-900 mb-2">{t("campaigns.expenseSubmitted")}</h3>
+              <p className="text-sm text-warmgray-500 mb-6">{t("campaigns.expenseSubmittedDesc")}</p>
+              <button onClick={closeExpenseForm} className="btn-primary justify-center w-full">{t("campaigns.done")}</button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.expenseDescription")} <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder={t("campaigns.expenseDescriptionPlaceholder")}
+                  value={expDescription}
+                  onChange={(e) => setExpDescription(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.expenseAmountRs")} <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  className="input-field"
+                  placeholder="e.g. 10000"
+                  value={expAmount}
+                  onChange={(e) => setExpAmount(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("campaigns.expenseCategory")} <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-2 gap-2">
+                  {["Medical", "Maintenance", "Individual Aid", "Fund Transfer", "Family Support"].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setExpCategory(cat)}
+                      className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors
+                        ${expCategory === cat ? "bg-yellow-50 border-yellow-300 text-yellow-700" : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"}`}
+                    >
+                      {t(`expenseCategory.${cat}`) !== `expenseCategory.${cat}` ? t(`expenseCategory.${cat}`) : cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {activeCampaigns.length > 1 && (
+                <div>
+                  <label className="text-sm font-medium text-warmgray-700 block mb-1">Campaign <span className="text-red-500">*</span></label>
+                  <div className="space-y-2">
+                    {activeCampaigns.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setExpCampaignId(c.id)}
+                        className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium border transition-colors text-left
+                          ${expCampaignId === c.id ? "bg-primary-50 border-primary-300 text-primary-700" : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"}`}
+                      >
+                        {td(`${c.id}.title`, c.title)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={handleSubmitExpense}
+                disabled={!expDescription || !expAmount || Number(expAmount) <= 0 || !expCampaignId}
+                className={`w-full justify-center mt-2 ${expDescription && expAmount && Number(expAmount) > 0 && expCampaignId ? "btn-primary bg-yellow-600 hover:bg-yellow-700" : "btn-secondary opacity-50 cursor-not-allowed"}`}
+              >
+                {`${t("campaigns.recordExpense")} Rs ${expAmount ? Number(expAmount).toLocaleString() : "0"}`}
+              </button>
+            </div>
+          )}
         </Modal>
       )}
     </div>
