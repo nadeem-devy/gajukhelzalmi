@@ -15,11 +15,12 @@ import {
   AdminIcon,
   CheckCircleIcon,
 } from "@/components/layout/icons";
+import type { Campaign } from "@/lib/types";
 
 export default function AdminCampaignsPage() {
   const { t, td, lang } = useLang();
   const { user, canManageCampaigns } = useAuth();
-  const { campaigns, createCampaign } = useStore();
+  const { campaigns, createCampaign, updateCampaign } = useStore();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [purpose, setPurpose] = useState("");
@@ -27,6 +28,48 @@ export default function AdminCampaignsPage() {
   const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
   const [endDate, setEndDate] = useState("");
   const [created, setCreated] = useState(false);
+
+  // Edit campaign state
+  const [editCampaign, setEditCampaign] = useState<Campaign | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPurpose, setEditPurpose] = useState("");
+  const [editTarget, setEditTarget] = useState("");
+  const [editSpent, setEditSpent] = useState("");
+  const [editStartDate, setEditStartDate] = useState("");
+  const [editEndDate, setEditEndDate] = useState("");
+  const [editStatus, setEditStatus] = useState<"active" | "completed" | "upcoming">("active");
+  const [editDone, setEditDone] = useState(false);
+
+  const openEdit = (campaign: Campaign) => {
+    setEditCampaign(campaign);
+    setEditTitle(campaign.title);
+    setEditPurpose(campaign.purpose);
+    setEditTarget(String(campaign.targetAmount));
+    setEditSpent(String(campaign.spentAmount));
+    setEditStartDate(campaign.startDate);
+    setEditEndDate(campaign.endDate || "");
+    setEditStatus(campaign.status);
+    setEditDone(false);
+  };
+
+  const handleUpdate = () => {
+    if (!editCampaign || !editTitle.trim() || !editPurpose.trim() || !editTarget) return;
+    updateCampaign(editCampaign.id, {
+      title: editTitle,
+      purpose: editPurpose,
+      targetAmount: Number(editTarget),
+      spentAmount: Number(editSpent) || 0,
+      startDate: editStartDate,
+      endDate: editEndDate || undefined,
+      status: editStatus,
+    });
+    setEditDone(true);
+  };
+
+  const closeEdit = () => {
+    setEditCampaign(null);
+    setEditDone(false);
+  };
 
   if (!canManageCampaigns) {
     return (
@@ -117,10 +160,18 @@ export default function AdminCampaignsPage() {
 
             <ProgressBar value={campaign.collectedAmount} max={campaign.targetAmount} size="sm" />
 
-            <div className="mt-3 flex items-center gap-2 text-xs text-warmgray-500">
-              <span>{campaign.expenses.length} {t("adminCampaigns.expenses")}</span>
-              <span>&middot;</span>
-              <span>{campaign.updates.length} {t("adminCampaigns.updates")}</span>
+            <div className="mt-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs text-warmgray-500">
+                <span>{campaign.expenses.length} {t("adminCampaigns.expenses")}</span>
+                <span>&middot;</span>
+                <span>{campaign.updates.length} {t("adminCampaigns.updates")}</span>
+              </div>
+              <button
+                onClick={() => openEdit(campaign)}
+                className="btn-ghost text-primary-600 text-sm"
+              >
+                {t("adminCampaigns.edit")}
+              </button>
             </div>
           </div>
         ))}
@@ -173,6 +224,79 @@ export default function AdminCampaignsPage() {
           </div>
         )}
       </Modal>
+
+      {/* Edit Campaign Modal */}
+      {editCampaign && (
+        <Modal
+          isOpen={!!editCampaign}
+          onClose={closeEdit}
+          title={editDone ? t("adminCampaigns.campaignUpdated") : t("adminCampaigns.editCampaign")}
+        >
+          {editDone ? (
+            <div className="text-center py-6">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircleIcon className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold text-warmgray-900 mb-2">{t("adminCampaigns.campaignUpdated")}!</h3>
+              <p className="text-sm text-warmgray-500 mb-6">{t("adminCampaigns.campaignUpdatedDesc")}</p>
+              <button onClick={closeEdit} className="btn-primary justify-center w-full">{t("adminCampaigns.done")}</button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.campaignTitle")} <span className="text-red-500">*</span></label>
+                <input type="text" className="input-field" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.purposeLabel")} <span className="text-red-500">*</span></label>
+                <textarea className="input-field min-h-[80px]" value={editPurpose} onChange={(e) => setEditPurpose(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.targetAmount")} <span className="text-red-500">*</span></label>
+                  <input type="number" className="input-field" value={editTarget} onChange={(e) => setEditTarget(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.spentAmount")}</label>
+                  <input type="number" className="input-field" value={editSpent} onChange={(e) => setEditSpent(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.statusLabel")} <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["active", "completed", "upcoming"] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setEditStatus(s)}
+                      className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors
+                        ${editStatus === s ? "bg-primary-50 border-primary-300 text-primary-700" : "border-warmgray-200 text-warmgray-600 hover:bg-warmgray-50"}`}
+                    >
+                      {t(`status.${s}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.startDate")}</label>
+                  <input type="date" className="input-field" value={editStartDate} onChange={(e) => setEditStartDate(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-warmgray-700 block mb-1">{t("adminCampaigns.endDate")} <span className="text-warmgray-400">({t("common.optional")})</span></label>
+                  <input type="date" className="input-field" value={editEndDate} onChange={(e) => setEditEndDate(e.target.value)} />
+                </div>
+              </div>
+              <button
+                onClick={handleUpdate}
+                disabled={!editTitle.trim() || !editPurpose.trim() || !editTarget}
+                className={`w-full justify-center mt-4 ${editTitle.trim() && editPurpose.trim() && editTarget ? "btn-primary" : "btn-secondary opacity-50 cursor-not-allowed"}`}
+              >
+                {t("adminCampaigns.saveChanges")}
+              </button>
+            </div>
+          )}
+        </Modal>
+      )}
     </div>
   );
 }

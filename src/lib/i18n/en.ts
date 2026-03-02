@@ -391,6 +391,13 @@ const en = {
     startDate: "Start Date",
     endDate: "End Date",
     createCampaign: "Create Campaign",
+    edit: "Edit",
+    editCampaign: "Edit Campaign",
+    campaignUpdated: "Campaign Updated",
+    campaignUpdatedDesc: "The campaign has been updated successfully.",
+    saveChanges: "Save Changes",
+    statusLabel: "Status",
+    spentAmount: "Spent Amount (Rs)",
     adminAccessRequired: "Admin Access Required",
   },
 

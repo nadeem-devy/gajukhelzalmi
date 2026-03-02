@@ -104,6 +104,15 @@ interface StoreContextType {
     endDate?: string;
     userId: string;
   }) => void;
+  updateCampaign: (id: string, data: {
+    title?: string;
+    purpose?: string;
+    targetAmount?: number;
+    spentAmount?: number;
+    startDate?: string;
+    endDate?: string;
+    status?: "active" | "completed" | "upcoming";
+  }) => void;
 
   // Activity Actions
   addActivity: (data: {
@@ -565,6 +574,39 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [users, loadData]);
 
+  // ===== Update Campaign =====
+  const updateCampaign = useCallback(async (id: string, data: {
+    title?: string;
+    purpose?: string;
+    targetAmount?: number;
+    spentAmount?: number;
+    startDate?: string;
+    endDate?: string;
+    status?: "active" | "completed" | "upcoming";
+  }) => {
+    setCampaigns((prev) =>
+      prev.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              ...(data.title !== undefined && { title: data.title }),
+              ...(data.purpose !== undefined && { purpose: data.purpose }),
+              ...(data.targetAmount !== undefined && { targetAmount: data.targetAmount }),
+              ...(data.spentAmount !== undefined && { spentAmount: data.spentAmount }),
+              ...(data.startDate !== undefined && { startDate: data.startDate }),
+              ...(data.endDate !== undefined && { endDate: data.endDate || undefined }),
+              ...(data.status !== undefined && { status: data.status }),
+            }
+          : c
+      )
+    );
+    try {
+      await apiPatch(`/api/campaigns/${id}`, data);
+    } catch {
+      loadData();
+    }
+  }, [loadData]);
+
   // ===== Activity Actions =====
   const addActivity = useCallback(async (data: {
     title: string;
@@ -673,6 +715,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         approveDonation,
         rejectDonation,
         createCampaign,
+        updateCampaign,
         addActivity,
       }}
     >

@@ -393,6 +393,13 @@ const ur: Dictionary = {
     startDate: "شروع کی تاریخ",
     endDate: "اختتام کی تاریخ",
     createCampaign: "مہم بنائیں",
+    edit: "ترمیم",
+    editCampaign: "مہم میں ترمیم",
+    campaignUpdated: "مہم تازہ ہو گئی",
+    campaignUpdatedDesc: "مہم کامیابی سے تازہ ہو گئی ہے۔",
+    saveChanges: "تبدیلیاں محفوظ کریں",
+    statusLabel: "حالت",
+    spentAmount: "خرچ شدہ رقم (روپے)",
     adminAccessRequired: "منتظم کی رسائی درکار ہے",
   },
 
