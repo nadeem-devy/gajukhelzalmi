@@ -149,7 +149,7 @@ export default function HeroSlider() {
           <div className="absolute bottom-[-40%] left-[-30%] w-full h-full rounded-full bg-white" />
         </div>
 
-        <div className="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-8 px-6 sm:px-10 py-10 sm:py-14">
+        <div className="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-8 px-6 sm:px-10 py-8 sm:py-14">
           {/* Text */}
           <div className="flex-1 text-center sm:text-left z-10">
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 px-3 py-1 rounded-full text-xs font-medium mb-4">
@@ -184,11 +184,11 @@ export default function HeroSlider() {
             </div>
           </div>
 
-          {/* Right side: icon (or image rendered as full-bleed background) */}
+          {/* Right side: icon (hidden on mobile, image slides use full-bleed bg) */}
           {!slide.image && (
             <div
               key={`icon-${current}`}
-              className="w-32 h-32 sm:w-44 sm:h-44 lg:w-52 lg:h-52 shrink-0 animate-fade-in"
+              className="hidden sm:block w-44 h-44 lg:w-52 lg:h-52 shrink-0 animate-fade-in"
             >
               {slide.icon}
             </div>
