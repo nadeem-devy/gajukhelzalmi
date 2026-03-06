@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n/context";
 
@@ -9,6 +10,7 @@ interface Slide {
   subtitleKey: string;
   gradient: string;
   icon: React.ReactNode;
+  image?: string;
 }
 
 // SVG icons for each slide
@@ -74,6 +76,7 @@ const slides: Slide[] = [
     subtitleKey: "home.hero.slide2Subtitle",
     gradient: "from-emerald-600 via-teal-700 to-cyan-800",
     icon: <TreeIcon />,
+    image: "/IMG_20240801_171725_optimized_2000.jpg",
   },
   {
     titleKey: "home.hero.slide3Title",
@@ -165,13 +168,31 @@ export default function HeroSlider() {
             </div>
           </div>
 
-          {/* Icon illustration */}
-          <div
-            key={`icon-${current}`}
-            className="w-32 h-32 sm:w-44 sm:h-44 lg:w-52 lg:h-52 shrink-0 animate-fade-in"
-          >
-            {slide.icon}
-          </div>
+          {/* Right side: image with gradient fade or icon */}
+          {slide.image ? (
+            <div
+              key={`img-${current}`}
+              className="relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 shrink-0 animate-fade-in overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={slide.image}
+                alt={t(slide.titleKey)}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 160px, (max-width: 1024px) 224px, 288px"
+              />
+              {/* Cloudy gradient overlay fading from the left */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-emerald-700/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-emerald-800/40 to-transparent" />
+            </div>
+          ) : (
+            <div
+              key={`icon-${current}`}
+              className="w-32 h-32 sm:w-44 sm:h-44 lg:w-52 lg:h-52 shrink-0 animate-fade-in"
+            >
+              {slide.icon}
+            </div>
+          )}
         </div>
       </div>
 
