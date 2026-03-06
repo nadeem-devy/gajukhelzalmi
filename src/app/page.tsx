@@ -16,6 +16,7 @@ import {
   CheckCircleIcon,
 } from "@/components/layout/icons";
 import { useLang } from "@/lib/i18n/context";
+import HeroSlider from "@/components/home/hero-slider";
 
 export default function HomePage() {
   const { t, td } = useLang();
@@ -28,29 +29,8 @@ export default function HomePage() {
 
   return (
     <div className="container-page">
-      {/* Hero Section */}
-      <section className="text-center py-8 sm:py-12">
-        <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-          <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
-          {t("home.badge")}
-        </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-warmgray-900 text-balance leading-tight">
-          {t("home.title")}
-        </h1>
-        <p className="mt-3 text-warmgray-500 text-base sm:text-lg max-w-xl mx-auto text-balance">
-          {t("home.subtitle")}
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/campaigns" className="btn-primary">
-            <CampaignIcon className="w-4 h-4" />
-            {t("home.viewCampaigns")}
-          </Link>
-          <Link href="/funding" className="btn-secondary">
-            <FundingIcon className="w-4 h-4" />
-            {t("home.seeAllFunds")}
-          </Link>
-        </div>
-      </section>
+      {/* Hero Slider */}
+      <HeroSlider />
 
       {/* Stats Row */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
