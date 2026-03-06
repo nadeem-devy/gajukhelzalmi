@@ -125,6 +125,22 @@ export default function HeroSlider() {
       <div
         className={`bg-gradient-to-br ${slide.gradient} transition-all duration-700 ease-in-out`}
       >
+        {/* Full-bleed campaign image on right half */}
+        {slide.image && (
+          <div key={`img-${current}`} className="absolute inset-0 animate-fade-in">
+            <Image
+              src={slide.image}
+              alt={t(slide.titleKey)}
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+            {/* Gradient fade: solid on left, transparent on right */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-800 via-emerald-800/90 via-40% to-emerald-800/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/50 to-transparent" />
+          </div>
+        )}
+
         {/* Decorative circles */}
         <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
           <div className="absolute top-[-30%] right-[-20%] w-full h-full rounded-full bg-white" />
@@ -168,24 +184,8 @@ export default function HeroSlider() {
             </div>
           </div>
 
-          {/* Right side: image with gradient fade or icon */}
-          {slide.image ? (
-            <div
-              key={`img-${current}`}
-              className="relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 shrink-0 animate-fade-in overflow-hidden rounded-2xl"
-            >
-              <Image
-                src={slide.image}
-                alt={t(slide.titleKey)}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 160px, (max-width: 1024px) 224px, 288px"
-              />
-              {/* Cloudy gradient overlay fading from the left */}
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-emerald-700/60 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-800/40 to-transparent" />
-            </div>
-          ) : (
+          {/* Right side: icon (or image rendered as full-bleed background) */}
+          {!slide.image && (
             <div
               key={`icon-${current}`}
               className="w-32 h-32 sm:w-44 sm:h-44 lg:w-52 lg:h-52 shrink-0 animate-fade-in"
